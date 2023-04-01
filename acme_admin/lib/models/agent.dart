@@ -8,10 +8,7 @@ class Agent {
     required this.isAdmin,
   });
 
-  final String id;
-  final String name;
-  final String email;
-  final String password;
+  final String id, name, email, password;
   final bool isAdmin;
   final DateTime createdAt;
 

@@ -8,11 +8,7 @@ class Customer {
     required this.agentId,
   });
 
-  final String id;
-  final String name;
-  final String email;
-  final String password;
-  final String agentId;
+  final String id, name, email, password, agentId;
   final DateTime createdAt;
 
   Customer.fromMap({
