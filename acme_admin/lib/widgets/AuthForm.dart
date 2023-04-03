@@ -1,8 +1,12 @@
 import 'dart:math';
 
 import 'package:acme_admin/constants/constants.dart';
+import 'package:acme_admin/routes/router.dart';
+import 'package:acme_admin/state/auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({Key? key}) : super(key: key);
@@ -16,20 +20,14 @@ class _AuthFormState extends State<AuthForm> {
   final _email = TextEditingController();
   final _password = TextEditingController();
 
-  Future<Map> checkIfUserExistsAndAdmin(String email, String password) async {
-    final List response = await supaClient
+  Future<List> checkIfUserExistsAndAdmin(String email, String password) async {
+    final response = await supaClient
         .from('agent')
         .select()
         .eq('email', email)
         .eq('password', password)
         .eq('is_admin', true);
-    // print(response.toString());
-
-    if (response.isNotEmpty) {
-      return response.first;
-    } else {
-      throw ('No such user');
-    }
+    return response;
   }
 
   @override
@@ -112,15 +110,16 @@ class _AuthFormState extends State<AuthForm> {
                 ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    final res =
-                        checkIfUserExistsAndAdmin(_email.text, _password.text);
-                    print(res.toString());
-                    // if (res. != null) {
-                    //   context.go('/dashboard');
-                    // } else {
+                    final res = context
+                        .read<AuthStateLocal>()
+                        .login(_email.text, _password.text);
+                    // if (res.error != null) {
                     //   _email.text = '';
                     //   _password.text = '';
-                    //   context.go('/');
+                    //   snackbar(
+                    //       'An error occured, please doubke check your login details',
+                    //       true,
+                    //       context);
                     // }
                   }
                 },
