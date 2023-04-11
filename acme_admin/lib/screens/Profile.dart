@@ -1,4 +1,3 @@
-import 'package:acme_admin/widgets/SideMenu.dart';
 import 'package:flutter/material.dart';
 
 class Profile extends StatelessWidget {
@@ -9,7 +8,6 @@ class Profile extends StatelessWidget {
     return Scaffold(
       body: Row(
         children: const [
-          // Expanded(child: SideMenu()),
           Expanded(child: Text('Profile home widget')),
         ],
       ),
