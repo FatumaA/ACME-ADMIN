@@ -1,11 +1,7 @@
-import 'package:acme_admin/constants/constants.dart';
-import 'package:acme_admin/routes/router.dart';
-import 'package:acme_admin/screens/Dashboard.dart';
-import 'package:acme_admin/screens/SignIn.dart';
-import 'package:acme_admin/state/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:acme_admin/routes/router.dart';
+import 'package:acme_admin/state/auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_strategy/url_strategy.dart';
@@ -27,11 +23,12 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider<AuthStateLocal>(
       create: (_) => authState,
       child: MaterialApp.router(
-          routerConfig: router,
-          title: 'ACME LTD',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          )),
+        routerConfig: router,
+        title: 'ACME LTD',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+      ),
     );
   }
 }

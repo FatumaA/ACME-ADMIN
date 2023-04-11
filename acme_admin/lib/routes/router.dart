@@ -1,16 +1,21 @@
-import 'package:acme_admin/screens/Dashboard.dart';
+import 'package:flutter/material.dart';
+import 'package:acme_admin/screens/BasePage.dart';
 import 'package:acme_admin/screens/SignIn.dart';
 import 'package:acme_admin/state/auth.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 final authState = AuthStateLocal();
 
+final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _shellNavigatorKey =
+    GlobalKey<NavigatorState>();
+
 final GoRouter router = GoRouter(
-  refreshListenable: AuthStateLocal(),
+  debugLogDiagnostics: true,
+  navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
-  routes: <RouteBase>[
+  routes: [
     GoRoute(
       path: '/',
       builder: (BuildContext context, GoRouterState state) {
@@ -20,16 +25,19 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/dashboard',
       builder: (BuildContext context, GoRouterState state) {
-        return Dashboard();
+        return const BasePage();
       },
     ),
   ],
   redirect: (context, state) {
     final bool loggedIn = context.watch<AuthStateLocal>().loggedIn;
     print('loggedIn from router: $loggedIn');
-    if (!loggedIn) return '/';
-    if (loggedIn) return '/dashboard';
-
+    if (!loggedIn) {
+      return '/';
+    }
+    if (loggedIn) {
+      return '/dashboard';
+    }
     return null;
   },
 );
