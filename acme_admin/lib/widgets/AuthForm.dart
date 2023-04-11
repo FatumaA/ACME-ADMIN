@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:acme_admin/constants/constants.dart';
-import 'package:acme_admin/routes/router.dart';
 import 'package:acme_admin/state/auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -109,19 +106,21 @@ class _AuthFormState extends State<AuthForm> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final res = context
-                        .read<AuthStateLocal>()
-                        .login(_email.text, _password.text);
-                    // if (res.error != null) {
-                    //   _email.text = '';
-                    //   _password.text = '';
-                    //   snackbar(
-                    //       'An error occured, please doubke check your login details',
-                    //       true,
-                    //       context);
-                    // }
-                  }
+                  // if (_formKey.currentState!.validate()) {
+                  final res = context
+                      .read<AuthStateLocal>()
+                      .login('admin@acme.com', '123456');
+                  // context.go('/dashboard');
+                  // .login(_email.text, _password.text);
+                  // if (res.error != null) {
+                  //   _email.text = '';
+                  //   _password.text = '';
+                  //   snackbar(
+                  //       'An error occured, please doubke check your login details',
+                  //       true,
+                  //       context);
+                  // }
+                  // }
                 },
               ),
             ),
