@@ -1,10 +1,6 @@
-import 'package:acme_admin/constants/constants.dart';
-import 'package:acme_admin/state/auth.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:acme_admin/constants/constants.dart';
+import 'package:email_validator/email_validator.dart';
 
 class Add extends StatefulWidget {
   final String activeUserRole;
@@ -69,6 +65,9 @@ class _AddState extends State<Add> {
               ),
               controller: _name,
             ),
+            const SizedBox(
+              height: 16,
+            ),
             TextFormField(
               validator: (value) {
                 if (value == null ||
@@ -98,33 +97,29 @@ class _AddState extends State<Add> {
                 ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    // sign up the new user
+                    // print(
+                    //     'TOKEN??? ${supaClient.auth.currentSession?.accessToken}');
+                    // create password
                     final _password = 'password123';
-                    final res = await supaClient.auth.admin.createUser(
-                      AdminUserAttributes(
-                        email: _email.text,
-                        password: _password,
-                        data: {
-                          'name': _name.text,
-                          'user_role': widget.activeUserRole == 'admin'
-                              ? 'agent'
-                              : 'customer'
-                        },
-                      ),
+
+                    // invoke func that signs up user on BE then sends them an email
+                    final res = await supaClient.functions.invoke(
+                      'sendNewUserEmail',
+                      body: {
+                        'email': _email.text,
+                        'password': _password,
+                        'name': _name.text,
+                        'role': widget.activeUserRole == 'admin'
+                            ? 'agent'
+                            : 'customer'
+                      },
+                      // headers: {
+                      //   'Authorization':
+                      //       'Bearer ${supaClient.auth.currentSession?.accessToken}'
+                      // },
+                    ).catchError(
+                      (e) => print(e),
                     );
-                    // supaClient.auth
-                    //     .signUp(password: _password, email: _email.text, data: {
-                    //   'name': _name.text,
-                    //   'user_role': widget.activeUserRole == 'admin'
-                    //       ? 'agent'
-                    //       : 'customer'
-                    // });
-                    print('ADD.DART!!! $res');
-                    // if success: send them an email with their email and password login details
-                    if (res.user != null) {
-                      await supaClient.functions.invoke('sendNewUserEmail',
-                          body: {'email': _email.text, 'password': _password});
-                    }
                   }
                 },
               ),
