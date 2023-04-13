@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:acme_admin/constants/constants.dart';
 import 'package:acme_admin/screens/Add.dart';
 import 'package:acme_admin/screens/ShowList/ShowDetail.dart';
-import 'package:go_router/go_router.dart';
 
 class ShowList extends StatefulWidget {
-  const ShowList({super.key});
+  const ShowList({Key? key}) : super(key: key);
 
   @override
-  State<ShowList> createState() => _ShowListState();
+  _ShowListState createState() => _ShowListState();
 }
 
 class _ShowListState extends State<ShowList> {
   late String tableName;
+
   Future<List> getList(String userRole) async {
     tableName = userRole == 'admin' ? 'agent' : 'customer';
     final res = await supaClient.from(tableName).select();
@@ -55,31 +55,53 @@ class _ShowListState extends State<ShowList> {
           if (snapshot.hasData) {
             final list = snapshot.data!;
 
-            return ListView.builder(
-              itemCount: list.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: const Icon(Icons.construction),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => supaClient.from(tableName).delete().match(
-                      {'id': list[index]['id']},
+            return DataTable(
+              showCheckboxColumn: true,
+              columns: const [
+                DataColumn(label: Text('')),
+                DataColumn(
+                  label: Text('Name'),
+                ),
+                DataColumn(
+                  label: Text('Email'),
+                ),
+                DataColumn(
+                  label: Text('Details'),
+                ),
+              ],
+              rows: List<DataRow>.generate(
+                list.length,
+                (index) => DataRow(
+                  cells: [
+                    DataCell(
+                      Checkbox(
+                        value: false,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            if (value == true) {
+                              supaClient
+                                  .from(tableName)
+                                  .delete()
+                                  .match({'id': list[index]['id']});
+                            }
+                            print(list[index]['id']);
+                          });
+                        },
+                      ),
                     ),
-                    color: Colors.red,
-                  ),
-                  title: Text(list[index]['name']),
-                  subtitle: Text(list[index]['email']),
-                  // onTap: () => Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (context) => PageView(
-                  //       children: [
-                  //         ShowDetail(id: list[index]['id']),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-                );
-              },
+                    DataCell(Text(list[index]['name'].toString())),
+                    DataCell(Text(list[index]['email'].toString())),
+                    DataCell(
+                      TextButton(
+                        child: const Text('See More'),
+                        onPressed: () {
+                          // open modal with details
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ).toList(),
             );
           } else if (snapshot.hasError) {
             return const Center(child: Text('Error loading data.'));
