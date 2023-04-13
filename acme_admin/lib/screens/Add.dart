@@ -97,29 +97,19 @@ class _AddState extends State<Add> {
                 ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    // print(
-                    //     'TOKEN??? ${supaClient.auth.currentSession?.accessToken}');
                     // create password
                     final _password = 'password123';
 
                     // invoke func that signs up user on BE then sends them an email
-                    final res = await supaClient.functions.invoke(
-                      'sendNewUserEmail',
-                      body: {
-                        'email': _email.text,
-                        'password': _password,
-                        'name': _name.text,
-                        'role': widget.activeUserRole == 'admin'
-                            ? 'agent'
-                            : 'customer'
-                      },
-                      // headers: {
-                      //   'Authorization':
-                      //       'Bearer ${supaClient.auth.currentSession?.accessToken}'
-                      // },
-                    ).catchError(
-                      (e) => print(e),
-                    );
+                    final res = await supaClient.functions
+                        .invoke('sendNewUserEmail', body: {
+                      'email': _email.text,
+                      'password': _password,
+                      'name': _name.text,
+                      'role': widget.activeUserRole == 'admin'
+                          ? 'agent'
+                          : 'customer'
+                    });
                   }
                 },
               ),
