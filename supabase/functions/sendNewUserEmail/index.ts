@@ -29,9 +29,9 @@ serve(async (req) => {
 	}
 
 	// create a new user
-	const { email, password, name, role } = await req.json();
+	const { email, password, name, role, agent_id } = await req.json();
 
-	console.log(`About to sign up new user - req }`);
+	console.log(`Signing up new user init - ${JSON.stringify(req)}`);
 
 	const { data, error } = await supaClient.auth.admin.createUser({
 		email,
@@ -42,7 +42,6 @@ serve(async (req) => {
 	console.log(`Response from sign up - ${JSON.stringify(data)}`);
 
 	if (error) {
-		// return res.status(500).send(error.message);
 		return new Response(JSON.stringify(error), {
 			headers: corsHeaders,
 			status: 500,
@@ -50,35 +49,34 @@ serve(async (req) => {
 	}
 
 	if (!error) {
-		// send new user email
-		console.log(`Sending email init`);
-		const resp = await fetch("https://api.postmarkapp.com/email", {
-			method: "POST",
-			headers: {
-				"X-Postmark-Server-Token": `${Deno.env.get("POSTMARK_API_TOKEN")}`,
-				"content-type": "application/json",
-			},
-			body: JSON.stringify({
-				FROM: Deno.env.get("SEND_EMAIL")!,
-				TO: email,
-				SUBJECT: "Acme Corp - Login Details",
-				TEXTBODY: `Hello ${name},\r, \r, Your login details are:\r, \r, Email: ${email}\r, Password: ${password}\r, \r, Please change your password upon logging in at http://localhost:3000/ \r, Kind Regards,\r, Acme Corp`,
-			}),
-		});
+		// If newly created user is a customer, fill the foreign key agent_id
+		// with the id of the agent making the call from the FE
+		if (agent_id != null) {
+			console.log("About to update newly created customer user");
 
-		const { ErrorCode, Message } = await resp.json();
-		console.log(`Response from Postmark api - ${resp}`);
+			const { data: newData, error: newError } = await supaClient
+				.from("customer")
+				.update({ agent_id })
+				.eq("id", data.user.id)
+				.select();
 
-		if (ErrorCode !== 0) {
-			console.error(
-				`Error sending email - Msg: ${Message} - Error code: ${ErrorCode}`
+			if (newError) {
+				return new Response(JSON.stringify(newError), {
+					headers: corsHeaders,
+					status: 500,
+				});
+			}
+
+			console.log(
+				`Response from updating customer - ${JSON.stringify(newData)}`
 			);
-			return new Response(JSON.stringify(Message), {
-				headers: corsHeaders,
-				status: 500,
-			});
+
+			const res = await _sendEmail(email, password, name);
+			return res;
 		}
 
+		const res = await _sendEmail(email, password, name);
+		return res;
 		// Dropping this implementation coz of this error:
 		// DenoStdInternalError: bufio: caught error from `readSlice()` without `partial` property
 		// await smtp.connectTLS({
@@ -109,19 +107,50 @@ serve(async (req) => {
 		// }
 
 		// await smtp.close();
-
-		return new Response(
-			JSON.stringify({
-				message: `${Message}`,
-				done: true,
-			}),
-			{
-				headers: corsHeaders,
-			}
-		);
 	}
 	return new Response(JSON.stringify({}), {
 		headers: corsHeaders,
 		status: 400,
 	});
 });
+
+const _sendEmail = async (email: string, password: string, name: string) => {
+	// send new user email
+	console.log(`Sending email init`);
+	const resp = await fetch("https://api.postmarkapp.com/email", {
+		method: "POST",
+		headers: {
+			"X-Postmark-Server-Token": `${Deno.env.get("POSTMARK_API_TOKEN")}`,
+			"content-type": "application/json",
+		},
+		body: JSON.stringify({
+			FROM: Deno.env.get("SEND_EMAIL")!,
+			TO: email,
+			SUBJECT: "Acme Corp - Login Details",
+			TEXTBODY: `Hello ${name},\r, \r, Your login details are:\r, \r, Email: ${email}\r, Password: ${password}\r, \r, Please change your password upon logging in at http://localhost:3000/ \r, Kind Regards,\r, Acme Corp`,
+		}),
+	});
+
+	const { ErrorCode, Message } = await resp.json();
+	console.log(`Response from Postmark api - ${JSON.stringify(resp)}`);
+
+	if (ErrorCode !== 0 || Message !== "OK") {
+		console.error(
+			`Error sending email - Msg: ${Message} - Error code: ${ErrorCode}`
+		);
+		return new Response(JSON.stringify(Message), {
+			headers: corsHeaders,
+			status: 500,
+		});
+	}
+
+	return new Response(
+		JSON.stringify({
+			message: `${Message}`,
+			done: true,
+		}),
+		{
+			headers: corsHeaders,
+		}
+	);
+};

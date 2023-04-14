@@ -1,6 +1,8 @@
+import 'package:acme_admin/state/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:acme_admin/constants/constants.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:provider/provider.dart';
 
 class Add extends StatefulWidget {
   final String activeUserRole;
@@ -31,6 +33,7 @@ class _AddState extends State<Add> {
 
   @override
   Widget build(BuildContext context) {
+    final activeUser = context.read<AuthStateLocal>().activeUser;
     return Scaffold(
       body: Form(
         key: _formKey,
@@ -108,7 +111,10 @@ class _AddState extends State<Add> {
                       'name': _name.text,
                       'role': widget.activeUserRole == 'admin'
                           ? 'agent'
-                          : 'customer'
+                          : 'customer',
+                      'agent_id': widget.activeUserRole == 'agent'
+                          ? activeUser?.id
+                          : null,
                     });
                   }
                 },
