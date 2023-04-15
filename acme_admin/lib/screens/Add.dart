@@ -2,6 +2,7 @@ import 'package:acme_admin/state/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:acme_admin/constants/constants.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class Add extends StatefulWidget {
@@ -102,6 +103,12 @@ class _AddState extends State<Add> {
                           ? activeUser?.id
                           : null,
                     });
+                    res.data["message"] == "OK"
+                        ? snackbar('Success', false, false, context)
+                        : snackbar('Something went wrong please try again',
+                            true, false, context);
+
+                    context.pop(context);
                   }
                 },
               ),

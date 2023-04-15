@@ -63,8 +63,9 @@ class _ShowListState extends State<ShowList> {
               return AlertDialog(
                 actions: [
                   TextButton(
-                      child: const Text('Close'),
-                      onPressed: () => context.pop(context)),
+                    child: const Text('Close'),
+                    onPressed: () => context.pop(context),
+                  ),
                 ],
                 title: Align(
                   child: Text(
