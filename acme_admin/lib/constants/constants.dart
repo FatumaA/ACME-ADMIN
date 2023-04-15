@@ -15,12 +15,17 @@ String checkUserRole(BuildContext context) {
   return activeUser?.userMetadata?['user_role'];
 }
 
-dynamic snackbar(String message, bool isError, BuildContext context) {
+dynamic snackbar(
+    String message, bool? isError, bool? isWarning, BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text('The user does not exist'),
-      duration: Duration(seconds: 2),
-      backgroundColor: Colors.red,
+    SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 3),
+      backgroundColor: isError == true
+          ? Colors.red
+          : isWarning == true
+              ? Colors.amber[900]
+              : Colors.green,
     ),
   );
 }
