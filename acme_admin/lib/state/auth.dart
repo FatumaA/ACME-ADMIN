@@ -21,10 +21,66 @@ class AuthStateLocal extends ChangeNotifier {
     return res;
   }
 
-  Future<void> logout() async {
+  logout() async {
     await supaClient.auth.signOut();
     _activeSession = null;
-    print('test logout from AuthStateLocal');
+    _activeSession = activeSession;
+    print('Logout from AuthStateLocal');
     notifyListeners();
+  }
+
+  Future<UserResponse?> updateUser(
+      {required String passwordValue, required String nameValue}) async {
+    final isPasswordTyped = passwordValue.isNotEmpty;
+    final hasNameChanged = (activeUser!.userMetadata!['name'] != nameValue);
+
+    print('ISPASSWORDTYPED: $isPasswordTyped, HASNAMECHANGED: $hasNameChanged');
+
+    // if password and name changed
+    if (isPasswordTyped && hasNameChanged) {
+      final res = await supaClient.auth.updateUser(
+        UserAttributes(
+          password: passwordValue,
+          data: {
+            'name': nameValue,
+          },
+        ),
+      );
+      _activeUser = res.user;
+      _activeUser = activeUser;
+      notifyListeners();
+      print('password and name changed : ${res.toString()}');
+      return res;
+    }
+
+    // if no password but name changed
+    if (!isPasswordTyped && hasNameChanged) {
+      final res = await supaClient.auth.updateUser(
+        UserAttributes(
+          data: {
+            'name': nameValue,
+          },
+        ),
+      );
+      _activeUser = res.user;
+      _activeUser = activeUser;
+      notifyListeners();
+      print('only name changed: $res');
+      return res;
+    }
+
+    // if no name but password changed
+    if (isPasswordTyped && !hasNameChanged) {
+      final res = await supaClient.auth.updateUser(
+        UserAttributes(
+          password: passwordValue,
+        ),
+      );
+      _activeUser = res.user;
+      _activeUser = activeUser;
+      notifyListeners();
+      print('only password changed: ${res.toString()}');
+      return res;
+    }
   }
 }
