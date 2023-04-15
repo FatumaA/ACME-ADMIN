@@ -6,10 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Profile extends StatefulWidget {
-  // final User activeUser;
   const Profile({
     super.key,
-    // required this.activeUser
   });
 
   @override
