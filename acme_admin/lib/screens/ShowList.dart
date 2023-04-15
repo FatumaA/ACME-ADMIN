@@ -1,7 +1,9 @@
+import 'package:acme_admin/state/db.dart';
 import 'package:flutter/material.dart';
 import 'package:acme_admin/constants/constants.dart';
 import 'package:acme_admin/screens/Add.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class ShowList extends StatefulWidget {
   const ShowList({Key? key}) : super(key: key);
@@ -79,6 +81,8 @@ class _ShowListState extends State<ShowList> {
                     child: Add(activeUserRole: userRole)),
               );
             },
+          ).then(
+            (value) => setState(() {}),
           );
         },
         icon: const Icon(Icons.add),
@@ -90,6 +94,7 @@ class _ShowListState extends State<ShowList> {
       ),
       body: FutureBuilder<List>(
         future: getList(userRole),
+        // context.read<DBStateLocal>().getList(userRole),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             _data = snapshot.data!;
@@ -169,6 +174,8 @@ class _ShowListState extends State<ShowList> {
                               style: TextStyle(color: Colors.red),
                             ),
                             onPressed: () async {
+                              final tableName =
+                                  userRole == 'admin' ? 'agent' : 'customer';
                               await supaClient
                                   .from(tableName)
                                   .delete()

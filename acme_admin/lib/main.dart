@@ -1,3 +1,4 @@
+import 'package:acme_admin/state/db.dart';
 import 'package:flutter/material.dart';
 import 'package:acme_admin/routes/router.dart';
 import 'package:acme_admin/state/auth.dart';
@@ -16,12 +17,15 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  MyApp({Key? key}) : super(key: key);
+  final dbState = DBStateLocal();
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<AuthStateLocal>(
-      create: (_) => authState,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthStateLocal>(create: (_) => authState),
+        ChangeNotifierProvider<DBStateLocal>(create: (_) => dbState),
+      ],
       child: MaterialApp.router(
         routerConfig: router,
         title: 'ACME LTD',
