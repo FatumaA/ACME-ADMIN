@@ -1,7 +1,7 @@
 import 'package:acme_admin/screens/Dashboard.dart';
 import 'package:acme_admin/screens/Profile.dart';
-import 'package:acme_admin/screens/ShowList/ShowDetail.dart';
-import 'package:acme_admin/screens/ShowList/ShowList.dart';
+import 'package:acme_admin/screens/ShowList.dart';
+import 'package:acme_admin/screens/Ticket.dart';
 import 'package:acme_admin/state/auth.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +41,7 @@ class _BasePageState extends State<BasePage> {
           SideMenu(
             controller: sideMenu,
             style: SideMenuStyle(
+              itemOuterPadding: const EdgeInsets.symmetric(vertical: 8.0),
               displayMode: SideMenuDisplayMode.auto,
               hoverColor: Colors.blue[100],
               selectedColor: Colors.lightBlue,
@@ -74,13 +75,31 @@ class _BasePageState extends State<BasePage> {
                   },
                   icon: const Icon(Icons.people),
                 ),
+              if (!(activeUser?.userMetadata!['user_role'] == 'admin'))
+                SideMenuItem(
+                  priority: 2,
+                  title: 'Tickets',
+                  onTap: (page, _) {
+                    sideMenu.changePage(page);
+                  },
+                  icon: const Icon(Icons.note),
+                ),
               SideMenuItem(
-                priority: 2,
+                priority: 3,
                 title: 'Profile',
                 onTap: (page, _) {
                   sideMenu.changePage(page);
                 },
                 icon: const Icon(Icons.person),
+              ),
+              SideMenuItem(
+                priority: 4,
+                title: 'Logout',
+                onTap: (_, __) async {
+                  // await AuthStateLocal().logout();
+                  // return context.read<AuthStateLocal>().activeSession;
+                },
+                icon: const Icon(Icons.logout),
               ),
             ],
           ),
@@ -100,11 +119,16 @@ class _BasePageState extends State<BasePage> {
                     child: ShowList(),
                   ),
                 ),
+                if (!(activeUser?.userMetadata!['user_role'] == 'admin'))
+                  Container(
+                    color: Colors.white,
+                    child: const Center(
+                      child: Ticket(),
+                    ),
+                  ),
                 Container(
                   color: Colors.white,
-                  child: const Center(
-                    child: Profile(),
-                  ),
+                  child: const Profile(),
                 ),
               ],
             ),
