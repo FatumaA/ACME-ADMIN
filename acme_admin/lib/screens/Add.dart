@@ -17,8 +17,6 @@ class _AddState extends State<Add> {
   final _name = TextEditingController();
   final _email = TextEditingController();
 
-  // Future<List> sendNewUserEmail() async {}
-
   @override
   void initState() {
     super.initState();
@@ -41,18 +39,6 @@ class _AddState extends State<Add> {
           scrollDirection: Axis.vertical,
           padding: const EdgeInsets.all(24.0),
           children: [
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Center(
-                child: Text(
-                  'Add New User',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-            ),
             TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty || value.length < 3) {
