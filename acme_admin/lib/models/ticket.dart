@@ -31,7 +31,7 @@ class Ticket {
         agentId = map['agent_id'],
         customerId = map['customer_id'],
         title = map['title'],
-        description = map['descriptionl'],
+        description = map['description'],
         status = map['status'],
         attachments = map['attachments'],
         createdAt = DateTime.parse(map['created_at']);

@@ -33,8 +33,6 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    // _name.text = widget.activeUser.userMetadata!['name'];
-    // _email.text = widget.activeUser.email!;
   }
 
   @override

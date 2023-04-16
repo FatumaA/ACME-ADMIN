@@ -96,8 +96,7 @@ class _BasePageState extends State<BasePage> {
                 priority: 4,
                 title: 'Logout',
                 onTap: (_, __) async {
-                  // await AuthStateLocal().logout();
-                  // return context.read<AuthStateLocal>().activeSession;
+                  await context.read<AuthStateLocal>().logout();
                 },
                 icon: const Icon(Icons.logout),
               ),
@@ -122,9 +121,7 @@ class _BasePageState extends State<BasePage> {
                 if (!(activeUser?.userMetadata!['user_role'] == 'admin'))
                   Container(
                     color: Colors.white,
-                    child: const Center(
-                      child: Ticket(),
-                    ),
+                    child: const Ticket(),
                   ),
                 Container(
                   color: Colors.white,
