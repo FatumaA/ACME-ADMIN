@@ -1,9 +1,7 @@
-import 'package:acme_admin/state/db.dart';
 import 'package:flutter/material.dart';
 import 'package:acme_admin/constants/constants.dart';
-import 'package:acme_admin/screens/Add.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:acme_admin/widgets/Add.dart';
 
 class ShowList extends StatefulWidget {
   const ShowList({Key? key}) : super(key: key);

@@ -2,7 +2,6 @@ import 'package:acme_admin/constants/constants.dart';
 import 'package:acme_admin/state/auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class AuthForm extends StatefulWidget {
@@ -107,9 +106,15 @@ class _AuthFormState extends State<AuthForm> {
                 ),
                 onPressed: () async {
                   // if (_formKey.currentState!.validate()) {
-                  final res = context
+                  // await supaClient.auth.signUp(
+                  //   email: 'admin@acme.com',
+                  //   password: '123456',
+                  //   data: {'name': 'Acme Admin', 'user_role': 'admin'},
+                  // );
+                  final res = await context
                       .read<AuthStateLocal>()
-                      .login('admin@acme.com', '123456');
+                      .login('agent@acme.com', '123456');
+
                   // context.go('/dashboard');
                   // .login(_email.text, _password.text);
                   // if (res.error != null) {
