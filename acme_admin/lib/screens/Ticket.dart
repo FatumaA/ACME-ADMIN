@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:acme_admin/widgets/AddTicket.dart';
 import 'package:acme_admin/constants/constants.dart';
 import 'package:acme_admin/state/auth.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class Ticket extends StatelessWidget {
-  const Ticket({super.key});
+  const Ticket({Key? key}) : super(key: key);
 
   Future<List> getTickets(String id) async {
     final res = await supaClient.from('ticket').select().eq('agent_id', id);
@@ -39,7 +41,36 @@ class Ticket extends StatelessWidget {
                           padding: MaterialStateProperty.all(
                         const EdgeInsets.all(15),
                       )),
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              actions: [
+                                TextButton(
+                                  child: const Text('Close'),
+                                  onPressed: () => context.pop(context),
+                                ),
+                              ],
+                              title: const Align(
+                                child: Text(
+                                  'Add new ticket',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              content: SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.6,
+                                child: const AddTicket(),
+                              ),
+                            );
+                          },
+                        );
+                        // .then(
+                        //     // (value) => setState,
+                        //     );
+                      },
                       icon: const Icon(Icons.add),
                       label: const Text('Create New Ticket'),
                     ),
@@ -47,8 +78,12 @@ class Ticket extends StatelessWidget {
                 LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                     final maxWidth = constraints.maxWidth;
-                    final isTabletView = maxWidth < 700;
-                    final isMobileView = maxWidth < 400;
+                    // final isTabletView = maxWidth < 700;
+                    final isTabletView =
+                        MediaQuery.of(context).size.width < 700;
+                    final isMobileView =
+                        MediaQuery.of(context).size.width < 400;
+                    // final isMobileView = maxWidth < 400;
                     final crossAxisCount = isMobileView
                         ? 1
                         : isTabletView
@@ -63,6 +98,7 @@ class Ticket extends StatelessWidget {
                       children: [
                         ...tickets.map(
                           (ticket) => _customCard(
+                            ticketNo: ticket['ticket_no'].toString(),
                             status: ticket['status'],
                             title: ticket['title'],
                             description: ticket['description'],
@@ -86,9 +122,14 @@ class Ticket extends StatelessWidget {
 }
 
 Widget _customCard(
-    {required String status,
+    {required String ticketNo,
+    required String status,
     required String title,
     required String description}) {
+  final descToDisplay = description.length > 40
+      ? '${description.substring(0, 70)} ...'
+      : description;
+
   return Card(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(5),
@@ -96,13 +137,54 @@ Widget _customCard(
         color: Colors.grey,
       ),
     ),
-    child: Column(
-      children: [
-        Text(status),
-        Text(title),
-        Text(description),
-        TextButton(child: const Text('see comments'), onPressed: () {}),
-      ],
+    child: Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'No.$ticketNo',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                status,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const Divider(
+            thickness: 2,
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 8.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 18.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(descToDisplay),
+            ),
+          ),
+          Align(
+              alignment: Alignment.bottomRight,
+              child: TextButton(
+                  child: const Text('see details'), onPressed: () {})),
+        ],
+      ),
     ),
   );
 }
