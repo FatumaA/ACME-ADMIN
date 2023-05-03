@@ -1,7 +1,7 @@
 import 'package:acme_admin/screens/Dashboard.dart';
 import 'package:acme_admin/screens/Profile.dart';
 import 'package:acme_admin/screens/ShowList.dart';
-import 'package:acme_admin/screens/Ticket.dart';
+import 'package:acme_admin/screens/Tickets.dart';
 import 'package:acme_admin/state/auth.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
@@ -121,7 +121,7 @@ class _BasePageState extends State<BasePage> {
                 if (!(activeUser?.userMetadata!['user_role'] == 'admin'))
                   Container(
                     color: Colors.white,
-                    child: const Ticket(),
+                    child: const Tickets(),
                   ),
                 Container(
                   color: Colors.white,

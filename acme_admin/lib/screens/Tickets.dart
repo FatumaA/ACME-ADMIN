@@ -6,18 +6,25 @@ import 'package:acme_admin/constants/constants.dart';
 import 'package:acme_admin/state/auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:acme_admin/models/ticket.dart';
 
-class Ticket extends StatefulWidget {
-  const Ticket({Key? key}) : super(key: key);
+class Tickets extends StatefulWidget {
+  const Tickets({Key? key}) : super(key: key);
 
   @override
-  State<Ticket> createState() => _TicketState();
+  State<Tickets> createState() => _TicketsState();
 }
 
-class _TicketState extends State<Ticket> {
-  Future<List> getTickets(String id) async {
+class _TicketsState extends State<Tickets> {
+  Future<List<Ticket>> getTickets(String id) async {
     final res = await supaClient.from('ticket').select().eq('agent_id', id);
-    return res;
+
+    final data = res as List<dynamic>;
+    final tickets = data
+        .map((e) => Ticket.fromMap(map: e as Map<String, dynamic>))
+        .toList();
+
+    return tickets;
   }
 
   @override
@@ -25,9 +32,9 @@ class _TicketState extends State<Ticket> {
     final activeUser = context.read<AuthStateLocal>().activeUser!;
     return FutureBuilder(
       future: getTickets(activeUser.id),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<Ticket>> snapshot) {
         if (snapshot.hasData) {
-          final tickets = snapshot.data! as List;
+          final tickets = snapshot.data!;
           return Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
@@ -74,7 +81,7 @@ class _TicketState extends State<Ticket> {
                             );
                           },
                         ).then(
-                          (value) => setState(() {}),
+                          (_) => setState(() {}),
                         );
                       },
                       icon: const Icon(Icons.add),
@@ -104,10 +111,7 @@ class _TicketState extends State<Ticket> {
                       children: [
                         ...tickets.map(
                           (ticket) => CustomCard(
-                            ticketNo: ticket['ticket_no'].toString(),
-                            status: ticket['status'],
-                            title: ticket['title'],
-                            description: ticket['description'],
+                            ticket: ticket,
                           ),
                         ),
                       ],
