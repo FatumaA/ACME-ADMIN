@@ -1,18 +1,13 @@
+import 'package:acme_admin/models/ticket.dart';
 import 'package:acme_admin/screens/ViewTicket.dart';
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatefulWidget {
-  final String ticketNo;
-  final String status;
-  final String title;
-  final String description;
+  final Ticket ticket;
 
   const CustomCard({
     super.key,
-    required this.ticketNo,
-    required this.status,
-    required this.title,
-    required this.description,
+    required this.ticket,
   });
 
   @override
@@ -38,14 +33,14 @@ class _CustomCardState extends State<CustomCard> {
           ],
           title: Align(
             child: Text(
-              'Ticket No.${widget.ticketNo}',
+              'Ticket No.${widget.ticket.ticketNo.toString()}',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           content: SizedBox(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height * 0.4,
-            child: ViewTicket(),
+            child: ViewTicket(ticketInfo: widget.ticket),
           ),
         );
       },
@@ -56,9 +51,9 @@ class _CustomCardState extends State<CustomCard> {
 
   @override
   Widget build(BuildContext context) {
-    final descToDisplay = widget.description.length > 40
-        ? '${widget.description.substring(0, 70)} ...'
-        : widget.description;
+    final descToDisplay = widget.ticket.description.length > 40
+        ? '${widget.ticket.description.substring(0, 70)} ...'
+        : widget.ticket.description;
     return GestureDetector(
       onTap: showTicketDetail,
       child: Card(
@@ -76,11 +71,11 @@ class _CustomCardState extends State<CustomCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'No.${widget.ticketNo}',
+                    'No.${widget.ticket.ticketNo.toString()}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    widget.status,
+                    widget.ticket.status,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -98,7 +93,7 @@ class _CustomCardState extends State<CustomCard> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    widget.title,
+                    widget.ticket.title,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
